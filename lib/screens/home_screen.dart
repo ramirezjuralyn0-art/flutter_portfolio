@@ -4,6 +4,7 @@ import '../widgets/activity_card.dart';
 import 'activity_one_screen.dart';
 import 'activity_two_screen.dart';
 import 'network_monitor_screen.dart';
+import 'network_diagnostic_screen.dart';
 import 'settings_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -139,12 +140,32 @@ class HomeScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => const NetworkMonitorScreen(),
+                      builder: (_) =>
+                          const NetworkMonitorScreen(),
                     ),
                   );
                 },
                 icon: const Icon(Icons.network_check),
                 label: const Text('Network Monitor'),
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          const NetworkDiagnosticScreen(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.speed),
+                label: const Text('Network Diagnostic'),
               ),
             ),
 
