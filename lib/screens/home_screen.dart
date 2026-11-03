@@ -3,12 +3,20 @@ import 'package:flutter/material.dart';
 import '../widgets/activity_card.dart';
 import 'activity_one_screen.dart';
 import 'activity_two_screen.dart';
-import 'network_monitor_screen.dart';
+import 'activity_five_screen.dart';
 import 'network_diagnostic_screen.dart';
+import 'local_mesh_chat_screen.dart';
 import 'settings_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
+
+  void _openActivity(BuildContext context, Widget page) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => page),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,140 +59,61 @@ class HomeScreen extends StatelessWidget {
 
             LayoutBuilder(
               builder: (context, constraints) {
-                if (constraints.maxWidth >= 600) {
-                  return Row(
-                    children: [
-                      Expanded(
-                        child: ActivityCard(
-                          title: 'Activity 1',
-                          description: 'Basic Flutter UI',
-                          icon: Icons.widgets,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    const ActivityOneScreen(),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
+                final isWide = constraints.maxWidth >= 600;
 
-                      const SizedBox(width: 16),
-
-                      Expanded(
-                        child: ActivityCard(
-                          title: 'Activity 2',
-                          description: 'Stateful Interaction',
-                          icon: Icons.touch_app,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    const ActivityTwoScreen(),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  );
-                }
-
-                return Column(
+                return GridView.count(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisCount: isWide ? 2 : 1,
+                  childAspectRatio: isWide ? 3.0 : 1.0,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
                   children: [
                     ActivityCard(
                       title: 'Activity 1',
-                      description: 'Basic Flutter UI',
+                      description: 'Portfolio & State Management',
                       icon: Icons.widgets,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                const ActivityOneScreen(),
-                          ),
-                        );
-                      },
+                      onTap: () =>
+                          _openActivity(context, const ActivityOneScreen()),
                     ),
-
-                    const SizedBox(height: 16),
-
                     ActivityCard(
                       title: 'Activity 2',
                       description: 'Stateful Interaction',
                       icon: Icons.touch_app,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                const ActivityTwoScreen(),
-                          ),
-                        );
-                      },
+                      onTap: () =>
+                          _openActivity(context, const ActivityTwoScreen()),
+                    ),
+                    ActivityCard(
+                      title: 'Activity 3',
+                      description: 'Network Diagnostic',
+                      icon: Icons.speed,
+                      onTap: () => _openActivity(
+                          context, const NetworkDiagnosticScreen()),
+                    ),
+                    ActivityCard(
+                      title: 'Activity 4',
+                      description: 'Local Mesh Chat',
+                      icon: Icons.wifi_tethering,
+                      onTap: () =>
+                          _openActivity(context, const LocalMeshChatScreen()),
+                    ),
+                    ActivityCard(
+                      title: 'Activity 5',
+                      description: 'Geofence Tracker Map',
+                      icon: Icons.map,
+                      onTap: () =>
+                          _openActivity(context, const ActivityFiveScreen()),
+                    ),
+                    ActivityCard(
+                      title: 'Settings',
+                      description: 'Dark / Light Theme',
+                      icon: Icons.settings,
+                      onTap: () =>
+                          _openActivity(context, const SettingsScreen()),
                     ),
                   ],
                 );
               },
-            ),
-
-            const SizedBox(height: 24),
-
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          const NetworkMonitorScreen(),
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.network_check),
-                label: const Text('Network Monitor'),
-              ),
-            ),
-
-            const SizedBox(height: 12),
-
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          const NetworkDiagnosticScreen(),
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.speed),
-                label: const Text('Network Diagnostic'),
-              ),
-            ),
-
-            const SizedBox(height: 12),
-
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const SettingsScreen(),
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.settings),
-                label: const Text('Settings'),
-              ),
             ),
           ],
         ),

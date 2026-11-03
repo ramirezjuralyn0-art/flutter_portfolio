@@ -124,6 +124,60 @@ class NetworkDiagnosticProvider extends ChangeNotifier {
     }
   }
 
+  // Measures upload speed by streaming data to a remote host while tracking
+  // the time of the first successful write as the upload ping.
+  Future<({double speedMbps, double pingMs})> measureUploadSpeed() async {
+    try {
+      final socket = await Socket.connect(
+        'speedtest.wdc01.softlayer.com',
+        80,
+        timeout: const Duration(seconds: 10),
+      );
+
+      final chunk = List<int>.filled(64 * 1024, 65);
+      final stopwatch = Stopwatch()..start();
+      final pingStart = Stopwatch()..start();
+
+      int totalBytes = 0;
+      const testDuration = Duration(seconds: 5);
+
+      while (stopwatch.elapsed < testDuration) {
+        socket.add(chunk);
+        await socket.flush();
+        totalBytes += chunk.length;
+
+        if (pingStart.isRunning) {
+          pingStart.stop();
+        }
+      }
+
+      stopwatch.stop();
+      await socket.close();
+
+      final seconds = stopwatch.elapsedMilliseconds / 1000.0;
+
+      if (totalBytes <= 0 || seconds <= 0) {
+        return (
+          speedMbps: 0.0,
+          pingMs: pingStart.elapsedMilliseconds.toDouble(),
+        );
+      }
+
+      final speedMbps =
+          (totalBytes * 8.0) / seconds / 1000000.0;
+
+      return (
+        speedMbps: speedMbps,
+        pingMs: pingStart.elapsedMilliseconds.toDouble(),
+      );
+    } catch (e) {
+      return (
+        speedMbps: 0.0,
+        pingMs: 0.0,
+      );
+    }
+  }
+
   Future<void> runDiagnostic() async {
     isTesting = true;
     health = null;
@@ -165,14 +219,10 @@ class NetworkDiagnosticProvider extends ChangeNotifier {
 
     notifyListeners();
 
-    // Temporary upload test
-    // We will replace this with a real upload test next.
-    await Future.delayed(
-      const Duration(seconds: 3),
-    );
+    final uploadResult = await measureUploadSpeed();
 
-    uploadSpeed = 6.5;
-    uploadPing = 35.0;
+    uploadSpeed = uploadResult.speedMbps;
+    uploadPing = uploadResult.pingMs;
 
     // -----------------------------
     // ANALYZE NETWORK HEALTH
