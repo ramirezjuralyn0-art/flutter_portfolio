@@ -5,6 +5,9 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+import java.util.Properties
+import java.io.FileInputStream
+
 android {
     namespace = "com.example.flutter_portfolio"
     compileSdk = flutter.compileSdkVersion
@@ -30,10 +33,31 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        create("release") {
+            val keyPropertiesFile = rootProject.file("key.properties")
+            if (keyPropertiesFile.exists()) {
+                val properties = Properties()
+                properties.load(FileInputStream(keyPropertiesFile))
+                storeFile = file(properties.getProperty("storeFile", "upload-keystore.jks"))
+                storePassword = properties.getProperty("storePassword", "")
+                keyAlias = properties.getProperty("keyAlias", "")
+                keyPassword = properties.getProperty("keyPassword", "")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+            isShrinkResources = true
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            signingConfig = signingConfigs.getByName("release")
+        }
+        debug {
             signingConfig = signingConfigs.getByName("debug")
         }
     }

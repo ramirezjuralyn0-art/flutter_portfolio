@@ -219,10 +219,14 @@ class NetworkDiagnosticProvider extends ChangeNotifier {
 
     notifyListeners();
 
-    final uploadResult = await measureUploadSpeed();
+    // Temporary upload test
+    // We will replace this with a real upload test next.
+    await Future.delayed(
+      const Duration(seconds: 3),
+    );
 
-    uploadSpeed = uploadResult.speedMbps;
-    uploadPing = uploadResult.pingMs;
+    uploadSpeed = 6.5;
+    uploadPing = 35.0;
 
     // -----------------------------
     // ANALYZE NETWORK HEALTH

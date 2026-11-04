@@ -104,6 +104,9 @@ class HomeScreen extends StatelessWidget {
                       onTap: () =>
                           _openActivity(context, const ActivityFiveScreen()),
                     ),
+
+                    const SizedBox(height: 12),
+
                     ActivityCard(
                       title: 'Settings',
                       description: 'Dark / Light Theme',

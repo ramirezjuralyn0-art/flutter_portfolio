@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -24,6 +25,13 @@ class _LocalMeshChatScreenState extends State<LocalMeshChatScreen> {
   final TextEditingController _messageController = TextEditingController();
 
   Future<void> _requestNearbyPermissions() async {
+    if (!Platform.isAndroid) {
+      setState(() {
+        connectionStatus = 'Local mesh chat is Android-only';
+      });
+      return;
+    }
+
     final statuses = await [
       Permission.bluetoothScan,
       Permission.bluetoothConnect,
@@ -131,9 +139,11 @@ class _LocalMeshChatScreenState extends State<LocalMeshChatScreen> {
   @override
   void dispose() {
     _messageController.dispose();
-    Nearby().stopAdvertising();
-    Nearby().stopDiscovery();
-    Nearby().stopAllEndpoints();
+    if (Platform.isAndroid) {
+      Nearby().stopAdvertising();
+      Nearby().stopDiscovery();
+      Nearby().stopAllEndpoints();
+    }
     super.dispose();
   }
 
